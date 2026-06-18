@@ -1,0 +1,24 @@
+{
+  "id": "sibling-combinator-spacing",
+  "title": "Sibling combinator spacing selector",
+  "description": "A framework-free spacing selector with child, negation, and subsequent-sibling combinators is applied over growing sibling lists.",
+  "tags": ["selectors", "sibling-combinator", "negation"],
+  "scale": { "start": 400, "step": 400, "max": 4000 },
+  "variants": [
+    {
+      "id": "default",
+      "title": "Stack spacing"
+    }
+  ],
+  "thresholds": {
+    "durationDeltaRatio": 1.5,
+    "durationMs": 45,
+    "longTaskCount": 1
+  },
+  "metrics": {
+    "standard": ["mark", "measure"],
+    "experimental": ["longtask", "long-animation-frame"],
+    "chromium": ["RecalcStyleDuration"]
+  },
+  "experimental": false
+}

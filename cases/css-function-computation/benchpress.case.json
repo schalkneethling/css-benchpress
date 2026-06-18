@@ -1,0 +1,24 @@
+{
+  "id": "css-function-computation",
+  "title": "CSS @function computation",
+  "description": "CSS custom functions are called across many declarations while a shared input custom property changes.",
+  "tags": ["css-functions", "custom-properties", "style-recalc"],
+  "scale": { "start": 200, "step": 200, "max": 2000 },
+  "variants": [
+    {
+      "id": "default",
+      "title": "Shared function input"
+    }
+  ],
+  "thresholds": {
+    "durationDeltaRatio": 1.5,
+    "durationMs": 45,
+    "longTaskCount": 1
+  },
+  "metrics": {
+    "standard": ["mark", "measure"],
+    "experimental": ["longtask"],
+    "chromium": ["RecalcStyleDuration"]
+  },
+  "experimental": false
+}

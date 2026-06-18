@@ -1,0 +1,24 @@
+{
+  "id": "custom-property-root-fanout",
+  "title": ":root custom property fanout",
+  "description": "A root custom property update fans out through many descendants that consume the variable in computed styles.",
+  "tags": ["custom-properties", "style-recalc"],
+  "scale": { "start": 500, "step": 500, "max": 5000 },
+  "variants": [
+    {
+      "id": "default",
+      "title": "Root fanout"
+    }
+  ],
+  "thresholds": {
+    "durationDeltaRatio": 1.5,
+    "durationMs": 40,
+    "longTaskCount": 1
+  },
+  "metrics": {
+    "standard": ["mark", "measure"],
+    "experimental": ["longtask", "long-animation-frame"],
+    "chromium": ["RecalcStyleDuration"]
+  },
+  "experimental": false
+}
