@@ -1,12 +1,16 @@
 #!/usr/bin/env node
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { discoverCases } from "../cases/discovery.ts";
-import { renderReport } from "../reports/html.ts";
+import {
+  createReportServer,
+  openInDefaultBrowser,
+  resolveReportTarget,
+  type ReportServer,
+} from "../reports/open.ts";
 import { runCase } from "../runner/playwrightRunner.ts";
-import type { RunSummary } from "../types.ts";
 import { errorMessage } from "../utils.ts";
 
 interface ParsedArgs {
@@ -17,6 +21,7 @@ interface ParsedArgs {
     headed?: boolean;
     help?: boolean;
     "max-scale"?: string;
+    port?: string;
     samples?: string;
   };
 }
@@ -30,6 +35,7 @@ function parseCliArgs(argv: string[]): ParsedArgs {
       headed: { type: "boolean" },
       help: { type: "boolean", short: "h" },
       "max-scale": { type: "string" },
+      port: { type: "string" },
       samples: { type: "string" },
     },
   });
@@ -52,18 +58,32 @@ function numberFlag(value: string | undefined, name: string): number | undefined
   return parsed;
 }
 
+function portFlag(value: string | undefined): number | undefined {
+  const parsed = numberFlag(value, "port");
+
+  if (parsed === undefined) {
+    return parsed;
+  }
+
+  if (!Number.isInteger(parsed) || parsed < 0 || parsed > 65_535) {
+    throw new Error("--port must be an integer from 0 to 65535");
+  }
+
+  return parsed;
+}
+
 function printHelp(): void {
   console.log(`css-benchpress
 
 Usage:
   css-benchpress list [--all]
   css-benchpress run <case-id> [--samples 20] [--max-scale 1000] [--headed]
-  css-benchpress report <run-id>
+  css-benchpress report <case-id> [--port 0]
 
 Commands:
   list       Print bundled case metadata.
   run        Execute a case growth loop and write runs/<run-id>/ artifacts.
-  report     Regenerate report.html from a saved summary.json.`);
+  report     Open the latest generated report for a case.`);
 }
 
 function findPackageRoot(startDirectory: string): string {
@@ -133,36 +153,45 @@ async function runCommand(positional: string[], flags: ParsedArgs["flags"]): Pro
   console.log(`Smallest regression scale: ${summary.smallestRegressionScale ?? "not reached"}`);
 }
 
-async function reportCommand(positional: string[]): Promise<void> {
-  const runId = positional[0];
+async function reportCommand(positional: string[], flags: ParsedArgs["flags"]): Promise<void> {
+  const query = positional[0];
 
-  if (!runId) {
-    throw new Error("report requires a run id");
+  if (!query) {
+    throw new Error("report requires a case id");
   }
 
-  const summaryPath = join(defaultRoot("runs"), runId, "summary.json");
+  const target = resolveReportTarget(defaultRoot("runs"), query);
 
-  if (!existsSync(summaryPath)) {
-    throw new Error(`Could not find ${summaryPath}`);
-  }
+  console.log(`Opening report for case "${target.summary.case.id}"`);
+  console.log(`Run: ${target.runId}`);
+  console.log(`Report: ${target.reportPath}`);
 
-  let rawSummary: string;
+  let server: ReportServer | undefined;
 
   try {
-    rawSummary = readFileSync(summaryPath, "utf8");
+    server = await createReportServer(target.runDirectory, { port: portFlag(flags.port) });
+    await openInDefaultBrowser(server.url);
+    console.log(`URL: ${server.url}`);
+    console.log("Serving report. Press Ctrl+C to stop.");
+    await waitForShutdown();
   } catch (error) {
-    throw new Error(`Could not read ${summaryPath}: ${errorMessage(error)}`);
+    throw new Error(`Could not open report: ${errorMessage(error)}`);
+  } finally {
+    await server?.close().catch(() => undefined);
   }
+}
 
-  let summary: RunSummary;
+function waitForShutdown(): Promise<void> {
+  return new Promise((resolveShutdown) => {
+    const cleanup = (): void => {
+      process.off("SIGINT", cleanup);
+      process.off("SIGTERM", cleanup);
+      resolveShutdown();
+    };
 
-  try {
-    summary = JSON.parse(rawSummary) as RunSummary;
-  } catch (error) {
-    throw new Error(`Could not parse ${summaryPath}: ${errorMessage(error)}`);
-  }
-
-  console.log(renderReport(summary));
+    process.once("SIGINT", cleanup);
+    process.once("SIGTERM", cleanup);
+  });
 }
 
 export async function main(argv = process.argv.slice(2)): Promise<void> {
@@ -184,7 +213,7 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
   }
 
   if (args.command === "report") {
-    await reportCommand(args.positional);
+    await reportCommand(args.positional, args.flags);
     return;
   }
 

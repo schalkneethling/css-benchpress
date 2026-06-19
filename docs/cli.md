@@ -52,13 +52,16 @@ For each scale, the runner:
 7. summarizes the scale and checks thresholds;
 8. stops after two consecutive threshold-crossing scales or at max scale.
 
-### `report <run-id>`
+### `report <case-id>`
 
 ```bash
-vp run dev -- report 2026-06-17T120000000Z-has-ancestor-invalidation
+vp run dev -- report has-ancestor-invalidation
+vp run dev -- report has-ancestor-invalidation --port 4173
 ```
 
-Reads `runs/<run-id>/summary.json` and prints regenerated report HTML to stdout. This is mainly useful when report rendering changes and you want to recreate HTML from a saved summary.
+Finds the newest matching run in `runs/`, starts a localhost server for that run directory, and opens `report.html` in the default browser. The command prints the selected run id, report path, and URL before opening the browser. Keep the command running while viewing the localhost URL; press Ctrl+C when you are done.
+
+By default, the server asks the operating system for an available port to avoid collisions. Pass `--port <number>` when you need a stable URL, for example while comparing reports or using browser tooling that remembers an origin. If the server or browser launch fails, the command reports the underlying error.
 
 ## Artifact Layout
 
