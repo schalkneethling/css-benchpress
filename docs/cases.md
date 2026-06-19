@@ -53,6 +53,8 @@ Fields:
 - `metrics.standard`, `metrics.experimental`, and `metrics.chromium` document which signals the case expects to be useful.
 - `experimental` hides exploratory or not-yet-actionable cases from `list` unless `--all` is passed.
 
+Saved Chromium traces are also summarized into Chromium-only `traceMetrics` in `summary.json` and `report.html` when trace capture succeeds. These signals are useful for compositor-sensitive cases because they can expose frame, paint, and compositing work separately from portable Performance API samples. See [performance signals](performance-signals.md) for more detail on how report metrics are categorized.
+
 ## Case Script
 
 `case.js` registers hooks through `defineCase`.
