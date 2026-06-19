@@ -33,6 +33,14 @@ test("reports threshold names for direct checks", () => {
   ]);
 });
 
+test("rejects unsupported trace metric thresholds", () => {
+  expect(() =>
+    crossedThresholds(emptyScaleSummary(10), {
+      traceMetricDelta: { RecalcStyleDuration: 10 },
+    }),
+  ).toThrow(/thresholds.traceMetricDelta is not supported yet/);
+});
+
 test("detects two consecutive threshold crossings", () => {
   const first = {
     ...emptyScaleSummary(100),

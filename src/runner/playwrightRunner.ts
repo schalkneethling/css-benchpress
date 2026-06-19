@@ -36,9 +36,20 @@ const contentTypes = new Map([
   [".json", "application/json; charset=utf-8"],
 ]);
 
-function createRunId(caseId: string, date = new Date()): string {
+function sanitizeRunIdSegment(value: string): string {
+  return value
+    .replaceAll(/\.\.+/g, "-")
+    .replaceAll(/[\\/]/g, "-")
+    .replaceAll(/[^A-Za-z0-9._-]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "")
+    .replaceAll(/-{2,}/g, "-");
+}
+
+export function createRunId(caseId: string, date = new Date()): string {
   const stamp = date.toISOString().replaceAll(":", "").replaceAll(".", "");
-  return `${stamp}-${caseId}`;
+  const safeCaseId = sanitizeRunIdSegment(caseId) || "case";
+
+  return `${stamp}-${safeCaseId}`;
 }
 
 async function importPlaywright(): Promise<PlaywrightModule> {
@@ -47,6 +58,19 @@ async function importPlaywright(): Promise<PlaywrightModule> {
   } catch (error) {
     throw new Error(
       `Playwright is required to run cases. Install dependencies with "vp install". ${String(error)}`,
+    );
+  }
+}
+
+async function launchChromium(
+  playwright: PlaywrightModule,
+  headless: boolean,
+): Promise<{ close(): Promise<void> }> {
+  try {
+    return (await playwright.chromium.launch({ headless })) as { close(): Promise<void> };
+  } catch (error) {
+    throw new Error(
+      `Could not launch Chromium. Run "vp install" first to install dependencies and Playwright browsers. ${errorMessage(error)}`,
     );
   }
 }
@@ -295,14 +319,17 @@ export async function runCase(options: RunCaseOptions): Promise<RunSummary> {
   const samples: BrowserSample[] = [];
   const summaries: ScaleSummary[] = [];
   const traces: string[] = [];
-  const playwright = await importPlaywright();
-  const browser = await playwright.chromium.launch({ headless: options.headless ?? true });
-  const caseServer = await createCaseServer(discoveredCase.directory);
-  const fixtureUrl = `${caseServer.origin}/fixture.html`;
-
-  mkdirSync(runDirectory, { recursive: true });
+  let browser: { close(): Promise<void> } | undefined;
+  let caseServer: StaticServer | undefined;
 
   try {
+    const playwright = await importPlaywright();
+    browser = await launchChromium(playwright, options.headless ?? true);
+    caseServer = await createCaseServer(discoveredCase.directory);
+    const fixtureUrl = `${caseServer.origin}/fixture.html`;
+
+    mkdirSync(runDirectory, { recursive: true });
+
     let baselineMedianMs = 0;
     let smallestRegressionScale: number | null = null;
 
@@ -380,8 +407,10 @@ export async function runCase(options: RunCaseOptions): Promise<RunSummary> {
 
     return writeRunArtifacts(runDirectory, discoveredCase, summary, samples);
   } finally {
-    await caseServer.close();
-    await (browser as { close(): Promise<void> }).close();
+    await Promise.all([
+      caseServer?.close() ?? Promise.resolve(),
+      browser?.close() ?? Promise.resolve(),
+    ]);
   }
 }
 

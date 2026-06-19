@@ -24,6 +24,15 @@ test("validates case config", () => {
       metrics: { ...validConfig.metrics, standard: "measure" },
     }),
   ).toThrow(/metrics.standard must be an array of strings/);
+  expect(() => validateCaseConfig({ ...validConfig, thresholds: "duration" })).toThrow(
+    /thresholds must be an object/,
+  );
+  expect(() =>
+    validateCaseConfig({
+      ...validConfig,
+      thresholds: { durationMs: "50" },
+    }),
+  ).toThrow(/thresholds.durationMs must be a finite number/);
   expect(() => validateCaseConfig({ ...validConfig, experimental: "false" })).toThrow(
     /experimental must be a boolean/,
   );

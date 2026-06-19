@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 import { discoverCases } from "../cases/discovery.ts";
 import { renderReport } from "../reports/html.ts";
@@ -65,8 +66,30 @@ Commands:
   report     Regenerate report.html from a saved summary.json.`);
 }
 
+function findPackageRoot(startDirectory: string): string {
+  let directory = startDirectory;
+
+  while (true) {
+    if (existsSync(join(directory, "package.json")) && existsSync(join(directory, "cases"))) {
+      return directory;
+    }
+
+    const parent = dirname(directory);
+
+    if (parent === directory) {
+      return startDirectory;
+    }
+
+    directory = parent;
+  }
+}
+
+const packageRoot = findPackageRoot(dirname(fileURLToPath(import.meta.url)));
+
 function defaultRoot(name: string): string {
-  return resolve(process.cwd(), name);
+  const root = name === "cases" ? packageRoot : process.cwd();
+
+  return resolve(root, name);
 }
 
 async function listCommand(flags: ParsedArgs["flags"]): Promise<void> {

@@ -27,9 +27,10 @@ globalThis.defineCase({
 
     document.querySelector("#fixture").replaceChildren(tiles);
   },
-  run() {
+  async run() {
     document.querySelector(".tiles").classList.toggle("heavy");
     void document.body.offsetHeight;
+    await new Promise((resolve) => requestAnimationFrame(resolve));
   },
   cleanup() {
     document.querySelector("#fixture").replaceChildren();

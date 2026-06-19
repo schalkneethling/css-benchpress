@@ -49,4 +49,6 @@ test("escapes report data", () => {
   expect(html).toContain("Case &lt;script&gt;");
   expect(html).toContain("Uses &quot;quotes&quot; &amp; tags");
   expect(html).toContain("x &lt; y");
+  expect(html).toContain("run-&lt;1&gt;");
+  expect(html).toContain("<code>max-scale</code>");
 });

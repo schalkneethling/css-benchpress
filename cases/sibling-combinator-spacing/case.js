@@ -1,6 +1,8 @@
+let style;
+
 globalThis.defineCase({
   setup({ scale }) {
-    const style = document.createElement("style");
+    style = document.createElement("style");
     style.textContent = `
       .stack > :not([hidden]) ~ :not([hidden]) { margin-block-start: var(--space, 4px); }
       .stack.compact > :not([hidden]) ~ :not([hidden]) { --space: 1px; }
@@ -34,5 +36,7 @@ globalThis.defineCase({
   },
   cleanup() {
     document.querySelector("#fixture").replaceChildren();
+    style?.remove();
+    style = undefined;
   },
 });

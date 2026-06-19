@@ -39,6 +39,8 @@ Install dependencies:
 vp install
 ```
 
+This repository keeps npm lifecycle scripts disabled by default, so `vp install` is the required setup command. It installs dependencies and prepares the Playwright browser runtime used by the benchmarks.
+
 List available cases:
 
 ```bash

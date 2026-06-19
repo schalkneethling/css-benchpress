@@ -7,6 +7,10 @@ import type { ScaleSummary, ThresholdConfig } from "../types.ts";
  * readers rather than as internal enum-like identifiers.
  */
 export function crossedThresholds(summary: ScaleSummary, thresholds: ThresholdConfig): string[] {
+  if (thresholds.traceMetricDelta !== undefined) {
+    throw new Error("thresholds.traceMetricDelta is not supported yet");
+  }
+
   const crossed: string[] = [];
 
   if (thresholds.durationMs !== undefined && summary.medianDurationMs >= thresholds.durationMs) {

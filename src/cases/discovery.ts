@@ -46,6 +46,28 @@ function asStringArray(value: unknown, label: string): string[] {
   return value;
 }
 
+function validateThresholds(value: unknown): CaseConfig["thresholds"] {
+  const thresholds = asRecord(value, "thresholds");
+  const validated: Record<string, unknown> = {};
+
+  for (const [key, threshold] of Object.entries(thresholds)) {
+    if (key === "traceMetricDelta") {
+      const traceMetricDelta = asRecord(threshold, "thresholds.traceMetricDelta");
+      validated.traceMetricDelta = Object.fromEntries(
+        Object.entries(traceMetricDelta).map(([metric, metricThreshold]) => [
+          metric,
+          asNumber(metricThreshold, `thresholds.traceMetricDelta.${metric}`),
+        ]),
+      );
+      continue;
+    }
+
+    validated[key] = asNumber(threshold, `thresholds.${key}`);
+  }
+
+  return validated as CaseConfig["thresholds"];
+}
+
 function asOptionalBoolean(value: unknown, label: string): boolean | undefined {
   if (value === undefined) {
     return undefined;
@@ -117,7 +139,7 @@ export function validateCaseConfig(value: unknown): CaseConfig {
     tags: asStringArray(config.tags, "tags"),
     scale: validateScale(config.scale),
     variants: validateVariants(config.variants),
-    thresholds: asRecord(config.thresholds, "thresholds"),
+    thresholds: validateThresholds(config.thresholds),
     metrics: validateMetrics(config.metrics),
     experimental: asOptionalBoolean(config.experimental, "experimental") ?? false,
   };

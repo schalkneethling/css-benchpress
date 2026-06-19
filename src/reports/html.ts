@@ -4,19 +4,29 @@ import { escapeHtml, formatMs } from "../utils.ts";
 function renderMetricList(label: string, metrics: string[]): string {
   const value = escapeHtml(metrics.join(", ") || "none");
 
-  return `<li><strong>${label}:</strong> ${value}</li>`;
+  return `<li><strong>${escapeHtml(label)}:</strong> ${value}</li>`;
+}
+
+function renderValue(value: unknown): string {
+  return escapeHtml(String(value));
+}
+
+function renderDuration(value: unknown): string {
+  return typeof value === "number" && Number.isFinite(value)
+    ? renderValue(formatMs(value))
+    : renderValue(value);
 }
 
 export function renderReport(summary: RunSummary): string {
   const rows = summary.scales
     .map(
       (scale) => `<tr>
-        <td>${scale.scale}</td>
-        <td>${scale.samples}</td>
-        <td>${formatMs(scale.medianDurationMs)}</td>
-        <td>${formatMs(scale.p75DurationMs)}</td>
-        <td>${formatMs(scale.p95DurationMs)}</td>
-        <td>${formatMs(scale.baselineDeltaMs)}</td>
+        <td>${renderValue(scale.scale)}</td>
+        <td>${renderValue(scale.samples)}</td>
+        <td>${renderDuration(scale.medianDurationMs)}</td>
+        <td>${renderDuration(scale.p75DurationMs)}</td>
+        <td>${renderDuration(scale.p95DurationMs)}</td>
+        <td>${renderDuration(scale.baselineDeltaMs)}</td>
         <td>${escapeHtml(scale.crossedThresholds.join(", ") || "none")}</td>
       </tr>`,
     )
@@ -94,9 +104,9 @@ export function renderReport(summary: RunSummary): string {
   <main>
     <h2>Regression</h2>
     <ul>
-      <li>Smallest regression scale: <strong>${summary.smallestRegressionScale ?? "not reached"}</strong></li>
-      <li>Stopped at scale: <strong>${summary.stoppedAtScale}</strong></li>
-      <li>Stop rule: <code>${summary.thresholdRule}</code></li>
+      <li>Smallest regression scale: <strong>${renderValue(summary.smallestRegressionScale ?? "not reached")}</strong></li>
+      <li>Stopped at scale: <strong>${renderValue(summary.stoppedAtScale)}</strong></li>
+      <li>Stop rule: <code>${renderValue(summary.thresholdRule)}</code></li>
     </ul>
     <h2>Metrics</h2>
     <ul>
