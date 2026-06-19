@@ -62,6 +62,25 @@ export interface BrowserSample {
   cdpMetrics: Record<string, number>;
 }
 
+export interface ChromiumTraceMetrics {
+  frameEventCount: number;
+  frameEventDurationMs: number;
+  frameIntervalCount: number;
+  maxFrameIntervalMs: number;
+  longFrameIntervalCount: number;
+  paintEventCount: number;
+  paintEventDurationMs: number;
+  compositorEventCount: number;
+  compositorEventDurationMs: number;
+}
+
+export interface ChromiumTraceSummary {
+  scale: number;
+  trace: string;
+  source: "chromium-trace";
+  metrics: ChromiumTraceMetrics;
+}
+
 export interface ScaleSummary {
   scale: number;
   samples: number;
@@ -86,6 +105,7 @@ export interface RunSummary {
   smallestRegressionScale: number | null;
   thresholdRule: "two-consecutive-scales" | "max-scale";
   scales: ScaleSummary[];
+  traceMetrics: ChromiumTraceSummary[];
   artifacts: {
     samples: string;
     report: string;

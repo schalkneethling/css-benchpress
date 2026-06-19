@@ -115,6 +115,8 @@ See [case authoring](docs/cases.md) for the metadata schema, bundled cases, and 
 
 Reports keep those categories separate so portable browser signals are not confused with Chromium-only attribution.
 
+See [performance signals](docs/performance-signals.md) for guidance on reading report metrics and links to the underlying browser documentation.
+
 ## Bundled Cases
 
 Current bundled cases:

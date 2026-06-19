@@ -80,6 +80,8 @@ Files:
 
 The first scale is the baseline. Later scales report median, p75, p95, min, max, baseline delta in milliseconds, and baseline delta ratio.
 
+When trace capture succeeds, `summary.json` also includes `traceMetrics` entries for the saved trace scales. These are Chromium-only frame, paint, and compositor signals derived from the trace files, including frame event counts, max frame interval, long frame interval count, paint event counts and duration, and compositor event counts and duration. See [performance signals](performance-signals.md) for guidance on reading these values.
+
 A run stops early only after threshold crossings at two consecutive scales. This avoids treating a single noisy sample group as the regression point. If no two-scale crossing occurs, the stop rule is `max-scale` and `smallestRegressionScale` is `null`.
 
 Use the copied `repro/` and selected trace files as starting points for deeper DevTools inspection.

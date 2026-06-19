@@ -17,6 +17,63 @@ function renderDuration(value: unknown): string {
     : renderValue(value);
 }
 
+function hasUsefulTraceMetrics(summary: RunSummary): boolean {
+  return (summary.traceMetrics ?? []).some(({ metrics }) => {
+    return (
+      metrics.frameEventCount > 0 ||
+      metrics.frameIntervalCount > 0 ||
+      metrics.maxFrameIntervalMs > 0 ||
+      metrics.longFrameIntervalCount > 0 ||
+      metrics.paintEventDurationMs > 0 ||
+      metrics.compositorEventCount > 0 ||
+      metrics.compositorEventDurationMs > 0
+    );
+  });
+}
+
+function renderTraceMetrics(summary: RunSummary): string {
+  if (!hasUsefulTraceMetrics(summary)) {
+    return "";
+  }
+
+  const traceRows = (summary.traceMetrics ?? [])
+    .map(
+      (trace) => `<tr>
+        <td>${renderValue(trace.scale)}</td>
+        <td><code>${renderValue(trace.trace)}</code></td>
+        <td>${renderValue(trace.metrics.frameEventCount)}</td>
+        <td>${renderDuration(trace.metrics.maxFrameIntervalMs)}</td>
+        <td>${renderValue(trace.metrics.longFrameIntervalCount)}</td>
+        <td>${renderValue(trace.metrics.paintEventCount)}</td>
+        <td>${renderDuration(trace.metrics.paintEventDurationMs)}</td>
+        <td>${renderValue(trace.metrics.compositorEventCount)}</td>
+        <td>${renderDuration(trace.metrics.compositorEventDurationMs)}</td>
+      </tr>`,
+    )
+    .join("\n");
+
+  return `<h2>Chromium Trace Metrics</h2>
+    <p>Trace-backed frame, paint, and compositor signals are Chromium-only.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Scale</th>
+          <th>Trace</th>
+          <th>Frame events</th>
+          <th>Max frame interval</th>
+          <th>Long frame intervals</th>
+          <th>Paint events</th>
+          <th>Paint duration</th>
+          <th>Compositor events</th>
+          <th>Compositor duration</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${traceRows}
+      </tbody>
+    </table>`;
+}
+
 export function renderReport(summary: RunSummary): string {
   const rows = summary.scales
     .map(
@@ -114,6 +171,7 @@ export function renderReport(summary: RunSummary): string {
       ${renderMetricList("Experimental standard APIs", summary.case.metrics.experimental)}
       ${renderMetricList("Chromium-only metrics", summary.case.metrics.chromium)}
     </ul>
+    ${renderTraceMetrics(summary)}
     <h2>Scale Samples</h2>
     <table>
       <thead>

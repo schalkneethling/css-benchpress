@@ -3,8 +3,9 @@ import { createReadStream, existsSync, mkdirSync, statSync, writeFileSync } from
 import { extname, join, normalize, relative, resolve, sep } from "node:path";
 import { findCase } from "../cases/discovery.ts";
 import { summarizeScale } from "../metrics/aggregate.ts";
+import { readChromiumTraceMetrics } from "../metrics/traces.ts";
 import { writeRunArtifacts } from "../reports/artifacts.ts";
-import type { BrowserSample, RunSummary, ScaleSummary } from "../types.ts";
+import type { BrowserSample, ChromiumTraceSummary, RunSummary, ScaleSummary } from "../types.ts";
 import { errorMessage } from "../utils.ts";
 import { generateScales } from "./scales.ts";
 import { shouldStopAfterScale } from "./thresholds.ts";
@@ -301,6 +302,30 @@ async function captureTraceForScale(
   }
 }
 
+function recordTraceMetrics(
+  traceMetrics: ChromiumTraceSummary[],
+  runDirectory: string,
+  tracePath: string,
+  scale: number,
+): string {
+  const relativeTracePath = relative(runDirectory, tracePath);
+
+  try {
+    traceMetrics.push({
+      scale,
+      trace: relativeTracePath,
+      source: "chromium-trace",
+      metrics: readChromiumTraceMetrics(tracePath),
+    });
+  } catch (error) {
+    console.warn(
+      `Could not parse Chromium trace metrics for scale ${scale}: ${errorMessage(error)}`,
+    );
+  }
+
+  return relativeTracePath;
+}
+
 export async function runCase(options: RunCaseOptions): Promise<RunSummary> {
   const sampleCount = options.samples ?? 20;
 
@@ -319,6 +344,7 @@ export async function runCase(options: RunCaseOptions): Promise<RunSummary> {
   const samples: BrowserSample[] = [];
   const summaries: ScaleSummary[] = [];
   const traces: string[] = [];
+  const traceMetrics: ChromiumTraceSummary[] = [];
   let browser: { close(): Promise<void> } | undefined;
   let caseServer: StaticServer | undefined;
 
@@ -342,7 +368,7 @@ export async function runCase(options: RunCaseOptions): Promise<RunSummary> {
         const tracePath = await captureTraceForScale(browser, fixtureUrl, runDirectory, scale);
 
         if (tracePath) {
-          traces.push(relative(runDirectory, tracePath));
+          traces.push(recordTraceMetrics(traceMetrics, runDirectory, tracePath, scale));
         }
       }
 
@@ -383,7 +409,7 @@ export async function runCase(options: RunCaseOptions): Promise<RunSummary> {
         const tracePath = await captureTraceForScale(browser, fixtureUrl, runDirectory, scale);
 
         if (tracePath) {
-          traces.push(relative(runDirectory, tracePath));
+          traces.push(recordTraceMetrics(traceMetrics, runDirectory, tracePath, scale));
         }
         break;
       }
@@ -397,6 +423,7 @@ export async function runCase(options: RunCaseOptions): Promise<RunSummary> {
       smallestRegressionScale,
       thresholdRule: smallestRegressionScale === null ? "max-scale" : "two-consecutive-scales",
       scales: summaries,
+      traceMetrics,
       artifacts: {
         samples: "samples.json",
         report: "report.html",

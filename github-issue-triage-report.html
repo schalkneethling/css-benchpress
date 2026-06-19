@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GitHub Issue Triage Report - css-benchpress</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fa;
+        --panel: #ffffff;
+        --text: #1f2328;
+        --muted: #57606a;
+        --border: #d0d7de;
+        --p0: #b60205;
+        --p1: #d93f0b;
+        --p2: #9a6700;
+        --p3: #1a7f37;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          15px/1.5 system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 32px 20px 48px;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        margin: 0 0 12px;
+      }
+
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+      }
+
+      h2 {
+        font-size: 1.35rem;
+        margin-top: 28px;
+      }
+
+      h3 {
+        font-size: 1.05rem;
+        margin-top: 22px;
+      }
+
+      p {
+        margin: 0 0 12px;
+      }
+
+      a {
+        color: #0969da;
+      }
+
+      .lede {
+        color: var(--muted);
+        max-width: 820px;
+      }
+
+      .meta,
+      .summary-grid,
+      details {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+
+      .meta {
+        display: grid;
+        gap: 8px;
+        margin: 24px 0;
+        padding: 16px;
+      }
+
+      .meta div {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .label {
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .summary-grid {
+        display: grid;
+        gap: 1px;
+        overflow: hidden;
+      }
+
+      .summary-row {
+        display: grid;
+        grid-template-columns: minmax(220px, 1.6fr) repeat(5, minmax(70px, 0.45fr)) minmax(
+            220px,
+            1.5fr
+          );
+        gap: 0;
+        background: var(--border);
+      }
+
+      .summary-row > div {
+        background: var(--panel);
+        padding: 10px 12px;
+      }
+
+      .summary-row.header > div {
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      details {
+        margin-top: 24px;
+        overflow: hidden;
+      }
+
+      summary {
+        cursor: pointer;
+        padding: 16px 18px;
+        font-weight: 700;
+        background: #eef2f6;
+      }
+
+      .repo-body {
+        padding: 18px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.5rem;
+        border-radius: 999px;
+        padding: 2px 9px;
+        color: #fff;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .badge.p0 {
+        background: var(--p0);
+      }
+
+      .badge.p1 {
+        background: var(--p1);
+      }
+
+      .badge.p2 {
+        background: var(--p2);
+      }
+
+      .badge.p3 {
+        background: var(--p3);
+      }
+
+      .status {
+        display: inline-block;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 2px 9px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        font-weight: 600;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 14px;
+      }
+
+      th,
+      td {
+        border-top: 1px solid var(--border);
+        padding: 12px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        color: var(--muted);
+        font-size: 0.86rem;
+        letter-spacing: 0;
+      }
+
+      td.issue {
+        min-width: 220px;
+        font-weight: 600;
+      }
+
+      .notes {
+        color: var(--muted);
+      }
+
+      @media (max-width: 820px) {
+        .summary-row {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-row.header {
+          display: none;
+        }
+
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+
+        thead {
+          display: none;
+        }
+
+        tr {
+          border-top: 1px solid var(--border);
+          padding: 10px 0;
+        }
+
+        td {
+          border: 0;
+          padding: 6px 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>GitHub Issue Triage Report</h1>
+      <p class="lede">
+        Priority triage for open issues in <strong>schalkneethling/css-benchpress</strong>, based on
+        the repository <code>GOAL.md</code> on the default branch.
+      </p>
+
+      <section class="meta" aria-label="Report metadata">
+        <div>
+          <span class="label">Generated:</span>
+          <time datetime="2026-06-19T11:33:41Z">2026-06-19T11:33:41Z</time>
+        </div>
+        <div>
+          <span class="label">Input repositories:</span>
+          <a href="https://github.com/schalkneethling/css-benchpress"
+            >schalkneethling/css-benchpress</a
+          >
+        </div>
+        <div><span class="label">Mode:</span> Labels created and applied on GitHub.</div>
+      </section>
+
+      <h2>Summary</h2>
+      <section class="summary-grid" aria-label="Repository summary">
+        <div class="summary-row header">
+          <div>Repository</div>
+          <div>Status</div>
+          <div>Open</div>
+          <div>p0</div>
+          <div>p1</div>
+          <div>p2</div>
+          <div>p3</div>
+          <div>Next issue</div>
+        </div>
+        <div class="summary-row">
+          <div>
+            <a href="https://github.com/schalkneethling/css-benchpress"
+              >schalkneethling/css-benchpress</a
+            >
+          </div>
+          <div>Triaged</div>
+          <div>9</div>
+          <div>0</div>
+          <div>1</div>
+          <div>6</div>
+          <div>2</div>
+          <div>
+            <a href="https://github.com/schalkneethling/css-benchpress/issues/6"
+              >#6 Parse frame and compositor signals from Chromium traces</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <details open>
+        <summary>
+          schalkneethling/css-benchpress - 9 open issues - p0: 0, p1: 1, p2: 6, p3: 2 - next: #6
+          Parse frame and compositor signals from Chromium traces
+        </summary>
+        <section class="repo-body">
+          <h2>Project Goal Summary</h2>
+          <p>
+            <code>css-benchpress</code> helps developers and tooling authors discover where
+            realistic, framework-free CSS patterns become performance problems by growing
+            web-platform fixtures until measurable regressions appear.
+          </p>
+          <p>
+            The current milestone is a Node.js and TypeScript CLI prototype that lists cases, runs a
+            growth loop, collects Performance API and Chromium-specific metrics, detects threshold
+            crossings, writes JSON and HTML reports, saves the smallest-scale repro, and ships an
+            initial case corpus around selectors, custom properties, layout instability, and
+            paint-heavy effects.
+          </p>
+
+          <h3>Label Update Status</h3>
+          <p>
+            <span class="status">Applied</span> Created missing labels <code>p0</code>,
+            <code>p1</code>, <code>p2</code>, and <code>p3</code>. Applied exactly one priority
+            label to every open issue. No non-priority labels were present to preserve.
+          </p>
+
+          <h3>Next Issue Nomination</h3>
+          <p>
+            <a href="https://github.com/schalkneethling/css-benchpress/issues/6"
+              >#6 Parse frame and compositor signals from Chromium traces</a
+            >
+            should be worked on next. It is the strongest near-term unlock for the project goal
+            because it turns saved Chromium traces into reportable evidence, keeps browser-specific
+            metrics clearly labeled, and makes compositor-sensitive fixtures such as scroll-driven
+            animation cases more credible.
+          </p>
+
+          <h3>Issue Table</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Priority</th>
+                <th>Issue</th>
+                <th>Rationale tied to GOAL.md</th>
+                <th>Impact</th>
+                <th>Current labels</th>
+                <th>Notes or uncertainty</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="badge p1">p1</span></td>
+                <td class="issue">
+                  <a href="https://github.com/schalkneethling/css-benchpress/issues/6"
+                    >#6 Parse frame and compositor signals from Chromium traces</a
+                  >
+                </td>
+                <td>
+                  Directly advances the goal of combining portable Performance API signals with
+                  Chromium trace data and producing reports that distinguish browser-specific
+                  metrics.
+                </td>
+                <td>
+                  High. Unlocks stronger evidence for compositor-sensitive cases and improves report
+                  usefulness for DevTools and browser-engine audiences.
+                </td>
+                <td><span class="badge p1">p1</span></td>
+                <td class="notes">
+                  Clear enough to start and valuable before adding more trace-dependent fixtures.
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge p2">p2</span></td>
+                <td class="issue">
+                  <a href="https://github.com/schalkneethling/css-benchpress/issues/9"
+                    >#9 Add property and feature isolation variants for bundled cases</a
+                  >
+                </td>
+                <td>
+                  Supports reproducible, explainable artifacts by separating scenario-level stress
+                  results from focused controls.
+                </td>
+                <td>
+                  Medium-high. Improves interpretability and authoring guidance once baseline cases
+                  are in place.
+                </td>
+                <td><span class="badge p2">p2</span></td>
+                <td class="notes">
+                  Useful and goal-aligned, but best after the core harness and initial reports are
+                  stable.
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge p2">p2</span></td>
+                <td class="issue">
+                  <a href="https://github.com/schalkneethling/css-benchpress/issues/8"
+                    >#8 Add page-load CSS stress cases</a
+                  >
+                </td>
+                <td>
+                  Broadens regression discovery from post-load mutations to initial render and
+                  first-load CSS costs.
+                </td>
+                <td>
+                  Medium-high. Valuable coverage, but it may require a distinct lifecycle from the
+                  current run-loop milestone.
+                </td>
+                <td><span class="badge p2">p2</span></td>
+                <td class="notes">
+                  Important follow-up; not part of the explicitly stated first mutation-focused
+                  prototype path.
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge p2">p2</span></td>
+                <td class="issue">
+                  <a href="https://github.com/schalkneethling/css-benchpress/issues/3"
+                    >#3 Add scroll-driven animation compositor and frame-timing cases</a
+                  >
+                </td>
+                <td>
+                  Adds realistic modern CSS fixtures and highlights where main-thread metrics alone
+                  may miss user-visible jank.
+                </td>
+                <td>Medium-high. Strong goal fit for future CSS tooling guidance.</td>
+                <td><span class="badge p2">p2</span></td>
+                <td class="notes">
+                  Likely more actionable after #6 exposes reliable frame and compositor signals.
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge p2">p2</span></td>
+                <td class="issue">
+                  <a href="https://github.com/schalkneethling/css-benchpress/issues/2"
+                    >#2 Add container query and style query stress cases</a
+                  >
+                </td>
+                <td>
+                  Adds a modern CSS performance surface with clear scaling axes and control-fixture
+                  expectations.
+                </td>
+                <td>Medium. Strongly aligned with realistic fixture growth and author guidance.</td>
+                <td><span class="badge p2">p2</span></td>
+                <td class="notes">
+                  Experimental query types should remain hidden until support and signal quality are
+                  actionable.
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge p2">p2</span></td>
+                <td class="issue">
+                  <a href="https://github.com/schalkneethling/css-benchpress/issues/4"
+                    >#4 Add content-visibility and text-wrap stress cases</a
+                  >
+                </td>
+                <td>
+                  Extends the case corpus around layout cost, layout shift, and feature-specific
+                  performance behavior.
+                </td>
+                <td>
+                  Medium. Useful coverage for web-platform CSS patterns, especially with controls.
+                </td>
+                <td><span class="badge p2">p2</span></td>
+                <td class="notes">
+                  Good follow-up fixture work, but not as foundational as report/trace signal
+                  improvements.
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge p2">p2</span></td>
+                <td class="issue">
+                  <a href="https://github.com/schalkneethling/css-benchpress/issues/1"
+                    >#1 Add anchor positioning fallback stress cases</a
+                  >
+                </td>
+                <td>
+                  Adds a new layout-affecting primitive to the framework-free case corpus with clear
+                  scaling dimensions.
+                </td>
+                <td>
+                  Medium. Goal-aligned, but browser support and metric reliability may keep it
+                  experimental.
+                </td>
+                <td><span class="badge p2">p2</span></td>
+                <td class="notes">
+                  Worth doing after higher-signal fixture and reporting foundations are steady.
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge p3">p3</span></td>
+                <td class="issue">
+                  <a href="https://github.com/schalkneethling/css-benchpress/issues/5"
+                    >#5 Add subgrid, view transition, backdrop-filter, and color function cases</a
+                  >
+                </td>
+                <td>
+                  Expands the corpus, but groups several broad experimental feature areas that
+                  should probably become separate focused issues when implementation starts.
+                </td>
+                <td>
+                  Low-medium for the immediate milestone. Useful later as the shared corpus grows.
+                </td>
+                <td><span class="badge p3">p3</span></td>
+                <td class="notes">
+                  Lower priority due to breadth and speculative nature compared with clearer
+                  near-term case work.
+                </td>
+              </tr>
+              <tr>
+                <td><span class="badge p3">p3</span></td>
+                <td class="issue">
+                  <a href="https://github.com/schalkneethling/css-benchpress/issues/7"
+                    >#7 Move report HTML shell to a packaged template file</a
+                  >
+                </td>
+                <td>
+                  Improves maintainability of report rendering as the UI grows, but does not
+                  directly improve regression discovery or artifact credibility yet.
+                </td>
+                <td>Low for now. Helpful cleanup once report complexity increases.</td>
+                <td><span class="badge p3">p3</span></td>
+                <td class="notes">
+                  The issue itself says the current inline template is acceptable for the prototype.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </details>
+    </main>
+  </body>
+</html>
