@@ -1,0 +1,24 @@
+{
+  "id": "registered-property-inheritance",
+  "title": "@property inheritance behavior",
+  "description": "Registered inherited and non-inherited custom properties are updated across a growing DOM to compare invalidation behavior.",
+  "tags": ["custom-properties", "property", "inheritance"],
+  "scale": { "start": 400, "step": 400, "max": 4000 },
+  "variants": [
+    {
+      "id": "default",
+      "title": "Inherited vs non-inherited"
+    }
+  ],
+  "thresholds": {
+    "durationDeltaRatio": 1.5,
+    "durationMs": 45,
+    "longTaskCount": 1
+  },
+  "metrics": {
+    "standard": ["mark", "measure"],
+    "experimental": ["longtask", "long-animation-frame"],
+    "chromium": ["RecalcStyleDuration"]
+  },
+  "experimental": false
+}

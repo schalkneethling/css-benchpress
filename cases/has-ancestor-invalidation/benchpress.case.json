@@ -1,0 +1,24 @@
+{
+  "id": "has-ancestor-invalidation",
+  "title": ":has() ancestor invalidation",
+  "description": "Broad ancestor :has() selectors are stressed by toggling state classes deep in a growing DOM tree.",
+  "tags": ["selectors", "has", "invalidation"],
+  "scale": { "start": 200, "step": 200, "max": 2000 },
+  "variants": [
+    {
+      "id": "default",
+      "title": "Broad ancestor match"
+    }
+  ],
+  "thresholds": {
+    "durationDeltaRatio": 1.5,
+    "durationMs": 50,
+    "longTaskCount": 1
+  },
+  "metrics": {
+    "standard": ["mark", "measure"],
+    "experimental": ["longtask", "long-animation-frame"],
+    "chromium": ["RecalcStyleDuration", "LayoutDuration"]
+  },
+  "experimental": false
+}

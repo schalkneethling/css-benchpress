@@ -1,0 +1,24 @@
+{
+  "id": "paint-heavy-effect",
+  "title": "Paint-heavy visual effects",
+  "description": "Growing blur, filter, and shadow-like visual effects are toggled across a dense tile grid to expose paint cost.",
+  "tags": ["paint", "filter", "shadow"],
+  "scale": { "start": 200, "step": 200, "max": 2000 },
+  "variants": [
+    {
+      "id": "default",
+      "title": "Dense effect grid"
+    }
+  ],
+  "thresholds": {
+    "durationDeltaRatio": 1.5,
+    "durationMs": 50,
+    "longTaskCount": 1
+  },
+  "metrics": {
+    "standard": ["mark", "measure", "paint"],
+    "experimental": ["longtask", "long-animation-frame"],
+    "chromium": ["ScriptDuration", "TaskDuration"]
+  },
+  "experimental": false
+}

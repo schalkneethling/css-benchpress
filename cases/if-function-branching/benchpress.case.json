@@ -1,0 +1,23 @@
+{
+  "id": "if-function-branching",
+  "title": "CSS if() function branching",
+  "description": "Experimental placeholder for CSS if() branch computation once browser support is suitable for meaningful runs.",
+  "tags": ["experimental", "css-functions"],
+  "scale": { "start": 100, "step": 100, "max": 1000 },
+  "variants": [
+    {
+      "id": "default",
+      "title": "Branching placeholder",
+      "experimental": true
+    }
+  ],
+  "thresholds": {
+    "durationDeltaRatio": 1.5
+  },
+  "metrics": {
+    "standard": ["mark", "measure"],
+    "experimental": ["longtask"],
+    "chromium": ["RecalcStyleDuration"]
+  },
+  "experimental": true
+}

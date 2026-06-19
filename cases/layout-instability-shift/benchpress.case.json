@@ -1,0 +1,23 @@
+{
+  "id": "layout-instability-shift",
+  "title": "CSS-triggered layout instability",
+  "description": "A growing list is shifted by CSS state changes and measured with Layout Instability API entries when supported.",
+  "tags": ["layout", "layout-shift", "experimental-standard"],
+  "scale": { "start": 100, "step": 100, "max": 1000 },
+  "variants": [
+    {
+      "id": "default",
+      "title": "Expanding rows"
+    }
+  ],
+  "thresholds": {
+    "durationDeltaRatio": 1.25,
+    "layoutShiftScore": 0.1
+  },
+  "metrics": {
+    "standard": ["mark", "measure"],
+    "experimental": ["layout-shift", "long-animation-frame"],
+    "chromium": ["LayoutDuration"]
+  },
+  "experimental": false
+}
