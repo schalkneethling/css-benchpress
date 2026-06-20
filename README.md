@@ -53,14 +53,18 @@ Run a case with a smaller sample count while iterating:
 vp run dev -- run has-ancestor-invalidation --samples 3 --max-scale 400
 ```
 
-Open the generated report from `runs/<timestamp>-<case-id>/report.html`.
+Open the newest generated report for a case:
+
+```bash
+vp run dev -- report has-ancestor-invalidation
+```
 
 The package also exposes an installed CLI named `css-benchpress` after build or package installation:
 
 ```bash
 css-benchpress list
 css-benchpress run has-ancestor-invalidation
-css-benchpress report <run-id>
+css-benchpress report has-ancestor-invalidation
 ```
 
 Use `vp run dev -- ...` while editing this repository because it executes the TypeScript CLI source directly. Use `css-benchpress ...` when running the built or installed command.
