@@ -53,10 +53,13 @@ function normalizeSearchValue(value: string): string {
     .replaceAll(/^-+|-+$/g, "");
 }
 
-function reportTargetForRun(runsRoot: string, runId: string, query: string): ReportTarget {
+function reportTargetForRun(
+  runsRoot: string,
+  runId: string,
+  query: string,
+  summary: RunSummary,
+): ReportTarget {
   const runDirectory = join(runsRoot, runId);
-  const summaryPath = join(runDirectory, "summary.json");
-  const summary = readRunSummary(summaryPath);
   const reportPath = join(runDirectory, summary.artifacts.report || "report.html");
 
   if (!existsSync(reportPath)) {
@@ -92,7 +95,7 @@ export function resolveReportTarget(runsRoot: string, query: string): ReportTarg
         normalizeSearchValue(summary.case.id) === normalizedQuery ||
         normalizeSearchValue(summary.case.title) === normalizedQuery;
 
-      return caseMatches ? [reportTargetForRun(runsRoot, entry.name, query)] : [];
+      return caseMatches ? [reportTargetForRun(runsRoot, entry.name, query, summary)] : [];
     })
     .sort((left, right) => right.summary.createdAt.localeCompare(left.summary.createdAt));
 
